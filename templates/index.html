@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <h1>Title</h1>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    {% if alert_text %}
+        <div class="alert alert-success alerts" role="alert">
+            {{ alert_text }}
+        </div>
+    {% endif %}
+    
+    <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
+{% endblock %}
