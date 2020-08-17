@@ -61,3 +61,41 @@ a:hover{
     margin: 0;
     padding: 0;
 }
+#dim{
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    background-color:rgb(0, 0, 0);
+    opacity:0.8;
+    z-index: 90;
+}
+.white{
+    background-color: white;
+}
+.invisible{
+    display: none;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+table{
+    width: 50%;
+    border: 1px solid #d2d2d2;
+    border-collapse: collapse;
+    margin: auto;
+}
+td{
+    border: 1px solid #d2d2d2;
+}
+.datecell{
+    text-align: center;
+    color: #4f4f4f;
+}
+.popup{
+    position: absolute;
+    top: auto !important;
+    bottom: 25%;
+}

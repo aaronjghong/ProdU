@@ -31,6 +31,36 @@ def index():
     alert_text = ""
     return render_template("index.html")
 
+# Dealing with appointments / plans
+@app.route("/plans", methods =  ["GET", "POST"])
+@login_required
+def plans():
+    alert_text = ""
+    # Make query to get all plans add button next to all plans to remove
+    
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id ORDER BY date ASC", user_id = session["user_id"])
+    print(plans)
+    if request.method == "GET":
+        return render_template("plans.html", plans = plans)
+    else:
+        details = request.form.get("details")
+        date = request.form.get("date")
+
+        db.execute("INSERT INTO plans (user_id, details, date) VALUES (:user_id, :details, :date)",
+                                        user_id = session["user_id"], details = details, date = date)
+        alert_text = "Successfully Added"
+        # return render_template("plans.html", plans = plans, alert_text = alert_text)
+        # If you can figure out how to add alerts well, remove the line below
+        return redirect("/plans")
+
+@app.route("/deleteplan", methods = ["POST"])
+@login_required
+def deleteplan():
+    # Delete with sql query
+    id = request.form.get("id")
+    db.execute("DELETE FROM plans WHERE id = :id", id = id)
+    return redirect("/plans")
+
 # Dealing with registration
 @app.route("/register", methods = ["POST", "GET"])
 def regiser():

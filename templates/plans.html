@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Plans / Appointmnets{% endblock %}
+
+{% block body %}
+    <h1>Plans / Appointments</h1>
+
+    <!--Display Plans-->
+    <div id = "disp">
+        <table>
+            <th>Details</th>
+            <th>Date</th>
+            {% for row in plans%}
+                <tr>
+                    <td>{{  row["details"]  }}</td>
+                    <td class = "datecell">
+                        {{  row["date"] }}
+                        <form action="/deleteplan", method = "post">
+                            <input type="text" name = "id" value={{ row["id"] }} class = "invisible">
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!--Add Plans-->
+    <button type="button" class="btn btn-outline-primary formelem" id = "addplan">Add Task</button>
+    <div id = "center" class = "white popup">
+        <form action = "/plans", method = "post">
+            <div class="form-group">
+              <label for="exampleInputEmail1">Details</label>
+              <input type="text" class="form-control" name = "details" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Keep it short!">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Date</label>
+              <input type="date" class="form-control" id="exampleInputPassword1" name = "date" placeholder="Date">
+            </div>
+            <button type="submit" class="btn btn-primary" id = "add">Add</button>
+        </form>
+    </div>
+
+    {% if alert_text %}
+        <div class="alert alert-success alerts" role="alert">
+            {{ alert_text }}
+        </div>
+    {% endif %}
+
+    <div id = "dim"></div>
+    
+    <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>
+{% endblock %}
