@@ -1,4 +1,4 @@
-# CS50X FINAL PROJECT
+# ProdU
 This is my final project for CS50X
 
 The project will be a web-app built with Flask
