@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+    <a href="/projects">Back to Projects</a><br>
+    <button type="button" class="btn btn-outline-primary" id = "share">Share Project</button>
+    
+    <!--Sharing Project-->
+    <form action = "/share" method = "post" id = "shareable">
+        <input type="text" name = "username" placeholder="Username">
+        <input type="text" name = "id", value = {{ project["id"] }} class = "invisible">
+        <button type = "submit" class = "btn btn-primary" id = "addshare">Add Member</button>
+    </form>
+    
+    <h1> {{ project["name"] }} </h1>
+    <h2 style = "text-align: center !important;"> Importance: {{ project["importance"] }} </h2>
+    
+    <!--Display Project items-->
+    <div id = "disp" style = "width: 80%; margin: auto;">
+        <ol>
+            {% for item in items %}
+                <ul style="display:flex; justify-content: space-between">
+                    <div>
+                        <h3>{{ item["text"] }}</h3>
+                        <form action="/deleteitem", method = "post">
+                            <input type="text" value = {{ item["id"] }} class = "invisible" name = "iid">
+                            <input type="text" value = {{ project["id"] }} class = "invisible" name = "id">
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                    <div style = "display:flex; width: 50%; flex-direction: column;"> 
+                        <form action="/editstatus", method = "post" style = "width: 50%">
+                            <h4 class = "statustext">Status: {{ item["status"] }}</h4>
+                            <select class="form-control status" id="exampleFormControlSelect1" name = "status">
+                                <option value="" selected disabled hidden>Change Status</option>
+                                <option value="0" >Not Started</option>
+                                <option value="1">In Progress</option>
+                                <option value="2">Done</option>
+                            </select>
+                            <input type="text" value = {{ item["id"] }} class = "invisible" name = "iid">
+                            <input type="text" value = {{ project["id"] }} class = "invisible" name = "id">
+                            <button type="submit" class="btn btn-primary" id = "add">Change Status</button>
+                        </form>
+                    </div>
+                </ul>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div id = "dim"></div>
+
+
+    <!--Add Project Items-->
+    <button type="button" class="btn btn-outline-primary formelem" id = "addplan">Add Project Item</button>
+    <div id = "center" class = "white popup" style = 
+    "position: absolute !important; left: 37.5%; top: 25% !important; z-index: 99 !important">
+        <h2>Add Project Item</h2>
+        <form action = "/addpitem", method = "post">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Details</label>
+                <input type="text" class="form-control" name = "details" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder = "Item Details e.g. Finish Papers">
+                <input type="text" class = "invisible", name = "id", value = {{ project["id"] }}>
+            </div>
+            <button type="submit" class="btn btn-primary" id = "add">Add</button>
+        </form>
+
+    {% if alert_text %}
+        <div class="alert alert-success alerts" role="alert">
+            {{ alert_text }}
+        </div>
+    {% endif %}
+    <script src = "{{ url_for('static', filename = 'status.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>
+{% endblock %}

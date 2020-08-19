@@ -12,7 +12,12 @@ Projects are planned to allow multiple users to access it while plans/appointmen
 - Registration
 - Logins
 - Changing passwords
+- Plans / Appointments
+- Basic Projects Page
 
 ## What needs to be done:
 - Projects
+- - Sharing projects
+- - Making a new shared projects table and adding shared project ids to that table
+- - Project comments / Project item comments
 - Design

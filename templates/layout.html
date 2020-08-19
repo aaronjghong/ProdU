@@ -4,14 +4,15 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" tyoe = "text/css" href="{{ url_for('static',filename='style.css') }}">
         <title>
-            Flask App {% block title %}{% endblock %}
+            ProdU {% block title %}{% endblock %}
         </title>
     </head>
     <body>
         <div id = "navbar">
-            <a href = "/"><h2>LOGO HERE</h2></a>
+            <a href = "/"><h2>ProdU</h2></a>
             {% if session.user_id %}
                 <div>
+                    <a href="/projects" class = "navitem">Projects</a>
                     <a href="/plans" class = "navitem">Plans / Appointments</a>
                     <a href="/changepassword" class = "navitem">Change Password</a>
                     <a href="/login" class = "navitem">Logout</a>

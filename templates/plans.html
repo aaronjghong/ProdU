@@ -12,7 +12,7 @@
             <th>Date</th>
             {% for row in plans%}
                 <tr>
-                    <td>{{  row["details"]  }}</td>
+                    <td style = "width: 50%">{{  row["details"]  }}</td>
                     <td class = "datecell">
                         {{  row["date"] }}
                         <form action="/deleteplan", method = "post">
@@ -28,6 +28,7 @@
     <!--Add Plans-->
     <button type="button" class="btn btn-outline-primary formelem" id = "addplan">Add Task</button>
     <div id = "center" class = "white popup">
+        <h2>Add Plan</h2>
         <form action = "/plans", method = "post">
             <div class="form-group">
               <label for="exampleInputEmail1">Details</label>

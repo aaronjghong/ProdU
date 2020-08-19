@@ -27,9 +27,12 @@ def login_required(f):
 @login_required
 def index():
 
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id ORDER BY date ASC LIMIT 5", user_id = session["user_id"])
+    projects = db.execute("SELECT * FROM projects WHERE user_id = :user_id ORDER BY importance DESC LIMIT 5", user_id = session["user_id"])
+
     # Sends user to index.html, if logged in
     alert_text = ""
-    return render_template("index.html")
+    return render_template("index.html", plans = plans, projects = projects)
 
 # Dealing with appointments / plans
 @app.route("/plans", methods =  ["GET", "POST"])
@@ -52,6 +55,93 @@ def plans():
         # return render_template("plans.html", plans = plans, alert_text = alert_text)
         # If you can figure out how to add alerts well, remove the line below
         return redirect("/plans")
+
+#Dealing with projects
+@app.route("/projects", methods = ["GET", "POST"])
+@login_required
+def projects():
+    if request.method == "GET":
+        projects = db.execute("SELECT * FROM projects WHERE user_id = :user_id ORDER BY importance DESC", user_id = session["user_id"])
+        print(projects)
+        return render_template("projects.html", projects = projects)
+    else:
+        name = request.form.get("name")
+        importance = request.form.get("importance")
+        print(name)
+        print(importance)
+        db.execute("INSERT INTO projects (user_id, visible_ids, name, importance) VALUES (:user_id, :visible_ids, :name, :importance)",
+                    user_id = session["user_id"], visible_ids = None, name = name, importance = importance)
+        return redirect("/projects")
+
+# Dealing with viewing projects
+@app.route("/viewproject", methods = ["GET", "POST"])
+@login_required
+def viewproject():
+    if request.method == "POST":
+        id = request.form.get("id")
+        details = db.execute("SELECT * FROM projects WHERE id = :id", id = id)
+
+        shared_users = details[0]["visible_ids"]
+        print(shared_users)
+        if shared_users:
+            shared_users = shared_users.split(',')
+            if session["user_id"] in shared_users:
+                items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
+                return render_template("viewproject.html", project = details[0], items = items)
+
+        if session["user_id"] == details[0]["user_id"]:
+            items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
+            return render_template("viewproject.html", project = details[0], items = items)
+        else:
+            return "You do not have permission to view this page"
+
+        
+
+# Dealing with adding project items
+@app.route("/addpitem", methods = ["POST"])
+@login_required
+def addproject():
+    text = request.form.get("details")
+    id = request.form.get("id")
+    db.execute("INSERT INTO project_items (project_id, text, status) VALUES (:project_id, :text, :status)",
+                project_id = id, text = text, status = 0)
+    return redirect(f"/viewproject?id={id}", code = 307)
+
+# Editing project item status
+@app.route("/editstatus", methods = ["POST"])
+@login_required
+def editstatus():
+    id = request.form.get("iid")
+    project_id = request.form.get("id")
+    status = request.form.get("status")
+    db.execute("UPDATE project_items SET status = :status WHERE id = :id", status = status, id = id)    
+    return redirect(f"/viewproject?{project_id}", code = 307)
+
+# Deleting project items
+@app.route("/deleteitem", methods = ["POST"])
+@login_required
+def deleteitem():
+    id = request.form.get("iid")
+    project_id = request.form.get("id")
+    db.execute("DELETE FROM project_items WHERE id = :id", id = id)
+    return redirect(f"/viewproject?{project_id}", code = 307)
+
+# Sharing projects
+@app.route("/share", methods = ["POST"])
+@login_required
+def share():
+    username = request.form.get("username")
+    project_id = request.form.get("id")
+    guest_id = db.execute("SELECT * FROM users WHERE username = :username", username = username)
+    
+    if len(guest_id) is not 1:
+        return redirect(f"/viewproject?{project_id}", code = 307)
+    else:
+        guest_id = guest_id[0]["id"]
+        shared_users = db.execute("SELECT * FROM projects WHERE id = :id", id = project_id)[0]["visible_ids"]
+        shared_users = f"{shared_users},{guest_id}"
+        db.execute("UPDATE projects SET visible_ids = :visible_ids WHERE id = :id", visible_ids = shared_users, id = project_id)
+        return redirect(f"/viewproject?{project_id}", code = 307)
 
 @app.route("/deleteplan", methods = ["POST"])
 @login_required

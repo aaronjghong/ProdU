@@ -1,10 +1,41 @@
 {% extends "layout.html" %}
 
-{% block title %}Register{% endblock %}
+{% block title %}{% endblock %}
 
 {% block body %}
-    <h1>Title</h1>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <h1>ProdU</h1>
+    <div id = "indexdisplay">
+        <div id = "projects">
+            <h2 style = "margin: 0 auto;">Projects</h2>
+            {% if not projects %}
+                <p>Nothing to show here...</p>
+                <p>Add projects by going to the projects tab!</p>
+            {% else %}
+                {% for project in projects %}
+                    <br>
+                    <div style = "width: 100%;">
+                        <h3> {{ project["name"] }} </h3>
+                        <p>Importance: {{ project["importance"] }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div id = "plans">
+            <h2 style = "margin: 0 auto;">Plans / Appointments</h2>
+            {% if not plans %}
+                <p>Nothing to show here...</p><br>
+                <p>Add plans by going to the plans tab!</p>
+            {% else %}
+                {% for plan in plans %}
+                    <br>
+                    <div style = "width: 100%;">
+                        <h3> {{ plan["details"] }} </h3>
+                        <p>{{ plan["date"] }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
     {% if alert_text %}
         <div class="alert alert-success alerts" role="alert">
