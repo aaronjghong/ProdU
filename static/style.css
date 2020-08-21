@@ -116,3 +116,15 @@ td{
     flex-direction:column;
     width: 50%;
 }
+#shared-disp{
+    border: 1px solid #d2d2d2;
+    position: relative;
+    top: 10%;
+    width: 25%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-radius: 5px;
+    padding: 20px;
+}

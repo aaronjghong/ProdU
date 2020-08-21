@@ -1,5 +1,6 @@
 import cs50
 import os
+import re
 from cs50 import SQL
 from flask import Flask, session,render_template, request, redirect
 from flask_sessions import Session
@@ -80,22 +81,25 @@ def viewproject():
     if request.method == "POST":
         id = request.form.get("id")
         details = db.execute("SELECT * FROM projects WHERE id = :id", id = id)
+        shared = db.execute("SELECT * FROM shared WHERE user_id = :user_id", user_id = session["user_id"])
+        
+        if len(shared) == 1:
+            shared = shared[0]["project_ids"].split(",")
 
-        shared_users = details[0]["visible_ids"]
-        print(shared_users)
-        if shared_users:
-            shared_users = shared_users.split(',')
-            if session["user_id"] in shared_users:
-                items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
-                return render_template("viewproject.html", project = details[0], items = items)
-
+        # Checking for if user is the creator
         if session["user_id"] == details[0]["user_id"]:
+            shared_users = getUsers(id)
             items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
-            return render_template("viewproject.html", project = details[0], items = items)
+            return render_template("viewproject.html", project = details[0], items = items, owner = True, shared_users = shared_users)
+        
+        # Checking if user was shared the project
+        elif id in shared:
+            items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
+            return render_template("viewproject.html", project = details[0], items = items, owner = False, shared_users = [])
+        
+        # Denying access
         else:
             return "You do not have permission to view this page"
-
-        
 
 # Dealing with adding project items
 @app.route("/addpitem", methods = ["POST"])
@@ -133,16 +137,113 @@ def share():
     username = request.form.get("username")
     project_id = request.form.get("id")
     guest_id = db.execute("SELECT * FROM users WHERE username = :username", username = username)
-    
-    if len(guest_id) is not 1:
+    visible_ids = db.execute("SELECT * FROM projects WHERE id = :id", id = project_id)[0]["visible_ids"]
+
+    if guest_id:
+        guest_id = guest_id[0]["id"]
+        if not visible_ids:
+            visible_ids = guest_id
+            db.execute("UPDATE projects SET visible_ids = :visible_ids WHERE id = :id", 
+                        visible_ids = visible_ids, id = project_id)
+        else:
+            visible_ids = visible_ids.split(',')
+            print(f"split {guest_id}")
+            if str(guest_id) not in visible_ids:
+                visible_ids.append(str(guest_id))
+                visible_ids = ','.join(visible_ids)
+                db.execute("UPDATE projects SET visible_ids = :visible_ids WHERE id = :id", 
+                            visible_ids = visible_ids, id = project_id)
+
+        project_ids = db.execute("SELECT * FROM shared WHERE user_id = :user_id", user_id = guest_id)
+        if len(project_ids) != 1:
+
+            # If the user has not been shared a project before
+            project_ids = project_id
+            db.execute("INSERT INTO shared (user_id, project_ids) VALUES (:user_id, :project_ids)",
+                        user_id = guest_id, project_ids = project_ids)
+            return redirect(f"/viewproject?{project_id}", code = 307)
+        else:
+
+            # If the user has already been shared projects
+            project_ids = project_ids[0]["project_ids"].split(",")
+            if project_id in project_ids:
+
+                # Redundancy checking
+                return redirect(f"/viewproject?{project_id}", code = 307)
+            project_ids.append(f"{project_id}")
+            project_ids = ','.join(project_ids)
+
+        db.execute("UPDATE shared SET project_ids = :project_ids WHERE user_id = :user_id", project_ids = project_ids, user_id = guest_id)
         return redirect(f"/viewproject?{project_id}", code = 307)
     else:
-        guest_id = guest_id[0]["id"]
-        shared_users = db.execute("SELECT * FROM projects WHERE id = :id", id = project_id)[0]["visible_ids"]
-        shared_users = f"{shared_users},{guest_id}"
-        db.execute("UPDATE projects SET visible_ids = :visible_ids WHERE id = :id", visible_ids = shared_users, id = project_id)
+        print("could not find user")
         return redirect(f"/viewproject?{project_id}", code = 307)
 
+# Viewing shared projects
+@app.route("/shared", methods = ["GET", "POST"])
+@login_required
+def shared():
+    shared = db.execute("SELECT * FROM shared WHERE user_id = :user_id", user_id = session["user_id"])
+
+    if len(shared) == 1:
+
+        # Getting shared project ids
+        shared = shared[0]["project_ids"].split(",")
+        print(shared)
+        shared_projects = []
+        for id in shared:
+            for char in id:
+                if char not in [range(10)]:
+                    id.replace(char, '')
+            print(id)
+            # Getting shared project details 
+            single = db.execute("SELECT * FROM projects WHERE id = :id", id = id)
+            if len(single) == 1:
+                single = single[0]
+                single["owner"] = db.execute("SELECT * FROM users WHERE id = :id", id = single["user_id"])[0]["username"]
+                shared_projects.append(single)
+                print(shared_projects)
+    else:
+        shared_projects = []
+
+    if request.method == "GET":
+        return render_template("shared.html", projects = shared_projects)
+
+# Deleting shared users
+@app.route("/deleteuser", methods = ["POST"])
+@login_required
+def deleteuser():
+    username = request.form.get("username")
+    project_id = request.form.get("id")
+    guest_id = db.execute("SELECT * FROM users WHERE username = :username", username = username)[0]["id"]
+
+    # Removing project id from guest id's shared table
+    shared = db.execute("SELECT * FROM shared WHERE user_id = :user_id", user_id = guest_id)[0]["project_ids"].split(",")
+
+    shared.remove(project_id)
+
+    print(f"shared list now {shared}")
+
+    shared = ",".join(shared)
+
+    db.execute("UPDATE shared SET project_ids = :project_ids WHERE user_id = :user_id",
+                project_ids = shared, user_id = guest_id)
+
+    # Removing guest id from project's visible id list
+    visible_ids = db.execute("SELECT * FROM projects WHERE id = :id", id = project_id)[0]["visible_ids"].split(",")
+    
+    print(visible_ids)
+
+    visible_ids.remove(str(guest_id))
+
+    visible_ids = ",".join(visible_ids)
+
+    db.execute("UPDATE projects SET visible_ids = :visible_ids WHERE id = :id",
+                visible_ids = visible_ids, id = project_id)
+
+    return redirect(f"/viewproject?{project_id}", code = 307) 
+
+# Deleting plans
 @app.route("/deleteplan", methods = ["POST"])
 @login_required
 def deleteplan():
@@ -257,3 +358,21 @@ def changepassword():
             db.execute("UPDATE users SET hash = :hash WHERE id = :id", hash = hash, id = session["user_id"])
             alert_text = "Password Changed Successfully"
             return render_template("index.html", alert_text = alert_text)
+
+def getUsers(id):
+    # Takes the project id and returns a list a list of usernames that have access
+    visible_ids = db.execute("SELECT * FROM projects WHERE id = :id", id = id)[0]["visible_ids"]
+    id_list = []
+    u_list = []
+    if visible_ids:
+        visible_ids = visible_ids.split(",")
+        for i in visible_ids:
+            id_list.append(int(i))
+        for elem in id_list:
+            if elem == "" or elem == None:
+                id_list.remove(elem)
+            else:
+                j = db.execute("SELECT * FROM users WHERE id = :id", id = elem)[0]["username"]
+                u_list.append(j)
+    
+    return u_list

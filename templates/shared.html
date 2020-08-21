@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Shared Projects{% endblock %}
+
+{% block body %}
+    <h1>Shared Projects</h1>
+
+    <!--Display Projects-->
+    <div id = "disp">
+        <table style="text-align: center !important">
+            <th><h3>Name</h3></th>
+            <th><h3>Importance</h3></th>
+            {% for project in projects %}
+                <tr>
+                    <td style="width: 80%;"> {{project["name"]}} by {{project["owner"]}}
+                        <form action="/viewproject", method = "post">
+                            <input type="text" name = "id" value={{ project["id"] }} class = "invisible">
+                            <button type="submit" class="btn btn-outline-primary" value = {{ project["id"] }}>View</button>
+                        </form>
+                    </td>
+                    <td> {{ project["importance"] }} </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {% if alert_text %}
+        <div class="alert alert-success alerts" role="alert">
+            {{ alert_text }}
+        </div>
+    {% endif %}
+
+    
+    <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
+{% endblock %}

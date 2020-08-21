@@ -12,7 +12,7 @@
             <th><h3>Importance</h3></th>
             {% for project in projects %}
                 <tr>
-                    <td style="width: 80%;"> {{project["name"]}} {{project["id"]}}
+                    <td style="width: 80%;"> {{project["name"]}}
                         <form action="/viewproject", method = "post">
                             <input type="text" name = "id" value={{ project["id"] }} class = "invisible">
                             <button type="submit" class="btn btn-outline-primary" value = {{ project["id"] }}>View</button>
@@ -23,6 +23,8 @@
             {% endfor %}
         </table>
     </div>
+
+    <div id = "dim"></div>
 
     <!--Adding Projects-->
     <button type="button" class="btn btn-outline-primary formelem" id = "addplan">Add Project</button>
@@ -53,8 +55,6 @@
             {{ alert_text }}
         </div>
     {% endif %}
-
-    <div id = "dim"></div>
     
     <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>

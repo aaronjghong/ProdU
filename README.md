@@ -1,12 +1,8 @@
 # ProdU
-This is my final project for CS50X
-
-The project will be a web-app built with Flask
-
-The app will be a life-style productivity app where users can manage
+ProdU is a life-style productivity app where users can manage
 projects (in the form of to-do lists) and plans/appointments they have made
 
-Projects are planned to allow multiple users to access it while plans/appointments will stay private to each user
+Projects allow multiple users to access it while plans/appointments will stay private to each user
 
 ## What's done:
 - Registration
@@ -14,10 +10,9 @@ Projects are planned to allow multiple users to access it while plans/appointmen
 - Changing passwords
 - Plans / Appointments
 - Basic Projects Page
+- Sharing projects
+    - Managing shared users
 
 ## What needs to be done:
-- Projects
-- - Sharing projects
-- - Making a new shared projects table and adding shared project ids to that table
-- - Project comments / Project item comments
+- Project comments
 - Design

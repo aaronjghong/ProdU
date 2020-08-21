@@ -13,6 +13,10 @@
         <button type = "submit" class = "btn btn-primary" id = "addshare">Add Member</button>
     </form>
     
+    {% if owner %}
+    <button type="button" class="btn btn-outline-primary" id = "manageshared">Manage Access</button>
+    {% endif %}
+
     <h1> {{ project["name"] }} </h1>
     <h2 style = "text-align: center !important;"> Importance: {{ project["importance"] }} </h2>
     
@@ -49,6 +53,23 @@
     </div>
 
     <div id = "dim"></div>
+
+    <!--Manage Shared Users-->
+    <div id = "shared-disp" class = "white popup" style = "z-index: 99;">
+        <h2>Manage Shared</h2>
+        <ul>
+            {% for user in shared_users %}
+                <li>
+                    {{  user  }}
+                    <form action="/deleteuser", method = "POST">
+                        <button type="submit" class="btn btn-outline-danger">Remove User</button>
+                        <input type="text" name = "username" value = {{  user  }} class = "invisible">
+                        <input type="text" name = "id" value = {{  project["id"]  }} class = "invisible">
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
 
     <!--Add Project Items-->

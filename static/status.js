@@ -3,8 +3,12 @@ let statusArr = Array.prototype.slice.call(statusnodelist);
 let shareForm = document.getElementById("shareable");
 let shareSubmit = document.getElementById("addshare");
 let shareBtn = document.getElementById("share");
+let manageBtn = document.getElementById("manageshared");
+let dim = document.getElementById("dim");
+let manageDisp = document.getElementById("shared-disp");
 
 shareForm.style.display = "none";
+manageDisp.style.display = "none";
 
 function main(){
     for(i = 0; i < statusArr.length; i++){
@@ -25,6 +29,13 @@ function main(){
         else{
             shareForm.style.display = "block";
         }
+    })
+    manageBtn.addEventListener("click", ()=>{
+        manageDisp.style.display = "block";
+        dim.style.display = "block";
+    })
+    dim.addEventListener("click", ()=>{
+        manageDisp.style.display = "none";
     })
 }
 
