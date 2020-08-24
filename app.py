@@ -329,8 +329,11 @@ def login():
     
     # Clearing previous session data
     session.clear()
-
+    session["theme"] = "white"
+    session["referrer"] = "/"
     if request.method == "GET":
+        session["theme"] = "white"
+        print(f"{session['theme']} is the theme")
         return render_template("login.html")
     else:
 
@@ -351,7 +354,6 @@ def login():
         # Give the user a session id
         session["user_id"] = rows[0]["id"]
         session["commentopen"] = None
-        session["theme"] = "white"
         print(session["commentopen"])
 
         return redirect("/")
@@ -392,13 +394,22 @@ def changepassword():
             return render_template("index.html", alert_text = alert_text)
 
 # Changing themes
-@app.route("/changecolor", methods = ["POST"])
+@app.route("/changecolor", methods = ["GET","POST"])
 def changecolor():
-    if session["theme"] == "dark":
-        session["theme"] = "white"
+    if request.method == "GET":
+        if "viewproject" in session["referrer"]:
+            return redirect("/projects")
+        return redirect(session["referrer"])
     else:
-        session["theme"] = "dark"
-    return ('', 204)
+        session["referrer"] = request.referrer
+        theme = request.form.get("theme")
+        if theme == "white":
+            theme = "dark"
+        else:
+            theme = "white"
+        session["theme"] = theme
+        print(f"{session['theme']} vs {theme}")
+        return redirect(request.url, 302)
 
 def getUsers(id):
     # Takes the project id and returns a list a list of usernames that have access

@@ -31,7 +31,8 @@
             {% endif %}
         </div>
         {% if session.user_id %}
-            <form action="/changecolor" method = "post">
+            <form action="/changecolor" method = "post" id = "themechange">
+                <input type="text" value = {{ session.theme }} class = "invisible" name = "theme">
                 <button type = "submit" class = "btn btn-secondary" id = "theme-button" style = "background-color: #4f4f4f !important; font-family: 'Do Hyeon', sans-serif;">Change Theme</button>
             </form>
         {% endif %}
