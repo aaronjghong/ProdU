@@ -12,10 +12,11 @@
             <th><h3>Importance</h3></th>
             {% for project in projects %}
                 <tr>
-                    <td style="width: 80%;"> {{project["name"]}}
+                    <td style="width: 80%;"> 
+                        <h3>{{project["name"]}}</h3>
                         <form action="/viewproject", method = "post">
                             <input type="text" name = "id" value={{ project["id"] }} class = "invisible">
-                            <button type="submit" class="btn btn-outline-primary" value = {{ project["id"] }}>View</button>
+                            <button type="submit" class="btn btn-outline-primary" value = {{ project["id"] }} style = "width: 50%;">View</button>
                         </form>
                     </td>
                     <td> {{ project["importance"] }} </td>
@@ -27,7 +28,7 @@
     <div id = "dim"></div>
 
     <!--Adding Projects-->
-    <button type="button" class="btn btn-outline-primary formelem" id = "addplan">Add Project</button>
+    <button type="button" class="btn btn-outline-primary formelem" id = "addplan" style = "margin-top: 10px;">Add Project</button>
     <div id = "center" class = "white popup" style = 
     "position: absolute !important; left: 37.5%; top: 25% !important;">
         <h2>Add Project</h2>

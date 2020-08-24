@@ -1,6 +1,8 @@
 import cs50
 import os
 import re
+import time
+import datetime
 from cs50 import SQL
 from flask import Flask, session,render_template, request, redirect
 from flask_sessions import Session
@@ -27,6 +29,7 @@ def login_required(f):
 @app.route("/")
 @login_required
 def index():
+    session["commentopen"] = None
 
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id ORDER BY date ASC LIMIT 5", user_id = session["user_id"])
     projects = db.execute("SELECT * FROM projects WHERE user_id = :user_id ORDER BY importance DESC LIMIT 5", user_id = session["user_id"])
@@ -39,6 +42,7 @@ def index():
 @app.route("/plans", methods =  ["GET", "POST"])
 @login_required
 def plans():
+    session["commentopen"] = None
     alert_text = ""
     # Make query to get all plans add button next to all plans to remove
     
@@ -61,6 +65,7 @@ def plans():
 @app.route("/projects", methods = ["GET", "POST"])
 @login_required
 def projects():
+    session["commentopen"] = None
     if request.method == "GET":
         projects = db.execute("SELECT * FROM projects WHERE user_id = :user_id ORDER BY importance DESC", user_id = session["user_id"])
         print(projects)
@@ -82,7 +87,8 @@ def viewproject():
         id = request.form.get("id")
         details = db.execute("SELECT * FROM projects WHERE id = :id", id = id)
         shared = db.execute("SELECT * FROM shared WHERE user_id = :user_id", user_id = session["user_id"])
-        
+        comments = db.execute("SELECT * FROM comments WHERE project_id = :project_id ORDER BY datetime ASC", project_id = id)
+        comments = getCommentUsers(comments)
         if len(shared) == 1:
             shared = shared[0]["project_ids"].split(",")
 
@@ -90,12 +96,12 @@ def viewproject():
         if session["user_id"] == details[0]["user_id"]:
             shared_users = getUsers(id)
             items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
-            return render_template("viewproject.html", project = details[0], items = items, owner = True, shared_users = shared_users)
+            return render_template("viewproject.html", project = details[0], items = items, owner = True, shared_users = shared_users, comments = comments)
         
         # Checking if user was shared the project
         elif id in shared:
             items = db.execute ("SELECT * FROM project_items WHERE project_id = :project_id ORDER BY status ASC", project_id = id)
-            return render_template("viewproject.html", project = details[0], items = items, owner = False, shared_users = [])
+            return render_template("viewproject.html", project = details[0], items = items, owner = False, shared_users = [], comments = comments)
         
         # Denying access
         else:
@@ -252,9 +258,30 @@ def deleteplan():
     db.execute("DELETE FROM plans WHERE id = :id", id = id)
     return redirect("/plans")
 
+# Sending comments
+@app.route("/sendcomment", methods = ["POST"])
+@login_required
+def sendcomment():
+    comment = request.form.get("comment")
+    project_id = request.form.get("id")
+    dt = datetime.datetime.now()
+    
+    db.execute("INSERT INTO comments (user_id, project_id, text, datetime) VALUES (:user_id, :project_id, :text, :datetime)",
+    user_id = session["user_id"], project_id = project_id, text = comment, datetime = dt.strftime('%Y-%m-%d %H:%M:%S') )
+
+    session["commentopen"] = True
+    return redirect(f"/viewproject?{project_id}", code = 307) 
+
+# Closing the chat box
+@app.route("/closecomment", methods = ["POST"])
+@login_required
+def closecomment():
+    session["commentopen"] = None
+    return ('', 204)
+
 # Dealing with registration
 @app.route("/register", methods = ["POST", "GET"])
-def regiser():
+def register():
     alert_text = ""
 
     # If get, view the page, if post, check and update appropriately
@@ -323,12 +350,16 @@ def login():
 
         # Give the user a session id
         session["user_id"] = rows[0]["id"]
+        session["commentopen"] = None
+        print(session["commentopen"])
 
         return redirect("/")
 
 # Dealing with password changes
 @app.route("/changepassword", methods = ["GET", "POST"])
 def changepassword():
+    session["commentopen"] = None
+    
     alert_text = ""
 
     if request.method == "GET":
@@ -376,3 +407,12 @@ def getUsers(id):
                 u_list.append(j)
     
     return u_list
+
+def getCommentUsers(comments):
+    modifiedList = []
+    for comment in comments:
+        user_id = comment["user_id"]
+        username = db.execute("SELECT * FROM users WHERE id = :id", id = user_id)[0]["username"]
+        comment["username"] = username
+        modifiedList.append(comment)
+    return modifiedList

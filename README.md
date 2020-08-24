@@ -10,9 +10,9 @@ Projects allow multiple users to access it while plans/appointments will stay pr
 - Changing passwords
 - Plans / Appointments
 - Basic Projects Page
+- Project comments
 - Sharing projects
     - Managing shared users
 
 ## What needs to be done:
-- Project comments
 - Design

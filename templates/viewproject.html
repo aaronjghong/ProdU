@@ -20,6 +20,54 @@
     <h1> {{ project["name"] }} </h1>
     <h2 style = "text-align: center !important;"> Importance: {{ project["importance"] }} </h2>
     
+    <!--Comments-->
+    <button type = "button" class = "btn btn-outline-primary" id = "comment-button"
+    {% if session.commentopen %}
+        style = "display: none;"
+    {% else %}
+        style = "display: block;"
+    {% endif %}>Comments</button>
+
+    <div id = "comment-disp"
+    {% if session.commentopen == True %}
+        style = "display: flex;"
+    {% else %}
+        style = "display: none;"
+    {% endif %}>
+
+        <div style = "background-color: #f2f2f2;">
+            <button class = "btn btn-outline-danger" style = "visibility:hidden;">X</button>
+            <form action="/closecomment", method = "post" style = "background-color: #f2f2f2; margin: inherit">
+                <button type = "submit" class = "btn btn-outline-danger" id = "close-comments">X</button>
+            </form>
+        </div>
+        <div id = "comment-box">
+            <ul>
+                {% if comments %}
+                    {% for comment in comments %}
+                        <li>
+                            <div style = "display: flex; flex-direction: column; margin: none;">
+                                <p style = "margin: inherit;">{{ comment["text"] }}</p>
+                                <p style = "margin: inherit; color: #4f4f4f">{{ comment["username"] }}</p>
+                                <p style = "color: #d2d2d2">{{ comment["datetime"] }}</p>
+                            
+                            </div>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    No comments yet...
+                {% endif %}
+
+            </ul>
+        </div>
+        <form action="/sendcomment" method = "post" style = "display: flex; margin:inherit;">
+            <input type="text" name = "comment" style = "flex: auto">
+            <input type="text" class = "invisible" value = {{  project["id" ]}} name = "id">
+            <button type = "submit" class = "btn btn-primary" id = "send-comment-btn" style = "flex: 0;">Send</button>
+        </form>
+    </div>
+
+
     <!--Display Project items-->
     <div id = "disp" style = "width: 80%; margin: auto;">
         <ol>
@@ -55,7 +103,7 @@
     <div id = "dim"></div>
 
     <!--Manage Shared Users-->
-    <div id = "shared-disp" class = "white popup" style = "z-index: 99;">
+    <div id = "shared-disp" class = "white popup" style = "z-index: 99; position: absolute; left: 37.5%; top: 20% !important; bottom: auto !important;">
         <h2>Manage Shared</h2>
         <ul>
             {% for user in shared_users %}
@@ -94,4 +142,5 @@
     <script src = "{{ url_for('static', filename = 'status.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'comment.js') }}"></script>
 {% endblock %}
