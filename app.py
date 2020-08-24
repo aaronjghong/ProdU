@@ -4,7 +4,7 @@ import re
 import time
 import datetime
 from cs50 import SQL
-from flask import Flask, session,render_template, request, redirect
+from flask import Flask, session,render_template, request, redirect, url_for
 from flask_sessions import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -326,7 +326,7 @@ def register():
 @app.route("/login", methods = ["GET", "POST"])
 def login():
     alert_text = ""
-
+    
     # Clearing previous session data
     session.clear()
 
@@ -351,6 +351,7 @@ def login():
         # Give the user a session id
         session["user_id"] = rows[0]["id"]
         session["commentopen"] = None
+        session["theme"] = "white"
         print(session["commentopen"])
 
         return redirect("/")
@@ -389,6 +390,15 @@ def changepassword():
             db.execute("UPDATE users SET hash = :hash WHERE id = :id", hash = hash, id = session["user_id"])
             alert_text = "Password Changed Successfully"
             return render_template("index.html", alert_text = alert_text)
+
+# Changing themes
+@app.route("/changecolor", methods = ["POST"])
+def changecolor():
+    if session["theme"] == "dark":
+        session["theme"] = "white"
+    else:
+        session["theme"] = "dark"
+    return ('', 204)
 
 def getUsers(id):
     # Takes the project id and returns a list a list of usernames that have access

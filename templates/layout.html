@@ -2,7 +2,11 @@
     <head>
         <meta charset = "utf-8">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" tyoe = "text/css" href="{{ url_for('static',filename='style.css') }}">
+        {% if session.theme == "dark" %}    
+            <link rel="stylesheet" tyoe = "text/css" href="{{ url_for('static',filename='styledark.css') }}">
+        {% else %}
+            <link rel="stylesheet" tyoe = "text/css" href="{{ url_for('static',filename='style.css') }}">
+        {% endif %}
         <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
         <title>
             ProdU {% block title %}{% endblock %}
@@ -26,9 +30,15 @@
                 </div>
             {% endif %}
         </div>
+        {% if session.user_id %}
+            <form action="/changecolor" method = "post">
+                <button type = "submit" class = "btn btn-secondary" id = "theme-button" style = "background-color: #4f4f4f !important; font-family: 'Do Hyeon', sans-serif;">Change Theme</button>
+            </form>
+        {% endif %}
         <div style = "margin: 0 20px 0 20px">
             {% block body %}
             {% endblock %}
+            <script src = "{{ url_for('static', filename = 'theme.js') }}"></script>
         </div>
     </body>
 </html>

@@ -1,46 +1,54 @@
+body{
+    background-color: #333333;
+    color: white;
+}
 #navbar{
     position:sticky;
     top:0;
     width:100%;
     display: flex;
     justify-content: space-between;
-    background-color: #f2f2f2;
+    background-color: #4f4f4f;
 }
 .navitem{
     font-family: 'Do Hyeon', sans-serif;
-    color: #4f4f4f;
+    color: white;
     margin: 0 5px;
     vertical-align: sub;
 }
 .navitem:hover{
     text-decoration: none !important;
-    color:#4f4f4f;
+    color:white;
 }
 h1{
     text-align: center;
-    color: #4f4f4f;
+    color: white;
     font-size: 5em;
     font-family: 'Do Hyeon', sans-serif;
 }
 h2{
     text-align: left;
-    color: #4f4f4f;
+    color: white;
     font-family: 'Do Hyeon', sans-serif;
     font-size: 3em;
 }
 h3{
     font-family: 'Do Hyeon', sans-serif;
-    color: #4f4f4f;
+    color: white;
 }
 h4{
     font-family: 'Do Hyeon', sans-serif;
-    color: #4f4f4f;
+    color: white;
 }
 p{
-    color: #4f4f4f;
+    color: white;
 }
 a{
-    color: #4f4f4f;
+    color: white;
+}
+a:hover{
+    color: white;
+    text-decoration:none;
 }
 b{
     font-size: 1.5em;
@@ -90,7 +98,7 @@ a:hover{
     z-index: 90;
 }
 .white{
-    background-color: white;
+    background-color: #4f4f4f;
 }
 .invisible{
     display: none;
@@ -110,7 +118,7 @@ td{
 }
 .datecell{
     text-align: center;
-    color: #4f4f4f;
+    color: white;
 }
 .popup{
     position: absolute;

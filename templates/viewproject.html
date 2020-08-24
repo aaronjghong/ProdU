@@ -35,7 +35,7 @@
         style = "display: none;"
     {% endif %}>
 
-        <div style = "background-color: #f2f2f2;">
+        <div style = "background-color: #4f4f4f;">
             <button class = "btn btn-outline-danger" style = "visibility:hidden;">X</button>
             <form action="/closecomment", method = "post" style = "background-color: #f2f2f2; margin: inherit">
                 <button type = "submit" class = "btn btn-outline-danger" id = "close-comments">X</button>
@@ -142,5 +142,6 @@
     <script src = "{{ url_for('static', filename = 'status.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'theme.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'comment.js') }}"></script>
 {% endblock %}

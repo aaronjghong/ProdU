@@ -13,6 +13,7 @@ Projects allow multiple users to access it while plans/appointments will stay pr
 - Project comments
 - Sharing projects
     - Managing shared users
+- Added light and dark modes
 
 ## What needs to be done:
 - Design

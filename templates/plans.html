@@ -27,7 +27,7 @@
 
     <!--Add Plans-->
     <button type="button" class="btn btn-outline-primary formelem" id = "addplan" style = "margin-top: 10px;">Add Task</button>
-    <div id = "center" class = "white popup">
+    <div id = "center" class = "white popup" style = "position: absolute; left: 37.5%; top: 25% !important; bottom: auto !important;">
         <h2>Add Plan</h2>
         <form action = "/plans", method = "post">
             <div class="form-group">
@@ -52,4 +52,5 @@
     
     <script src = "{{ url_for('static', filename = 'alert.js') }}"></script>
     <script src = "{{ url_for('static', filename = 'plans.js') }}"></script>
+    <script src = "{{ url_for('static', filename = 'theme.js') }}"></script>
 {% endblock %}
