@@ -1,3 +1,5 @@
+// Handles the opening and closing of the comment section
+
 let commentButton = document.getElementById("comment-button");
 let commentDisplay = document.getElementById("comment-disp")
 let closeBtn = document.getElementById("close-comments");

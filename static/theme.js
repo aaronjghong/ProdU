@@ -1,3 +1,6 @@
+// Detects if the theme change button has been presssed
+// If pressed, submit the theme change form
+
 let themeBtn = document.getElementById("theme-button");
 let themeForm = document.getElementById("themechange")
 
